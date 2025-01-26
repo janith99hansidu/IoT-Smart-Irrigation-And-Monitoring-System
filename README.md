@@ -36,7 +36,7 @@ This solution is cost-effective, scalable, and capable of integrating additional
 
 
 ## **Project Architecture**  
-![Architecture Diagram]()  
+![Architecture Diagram](https://github.com/janith99hansidu/EC6020-Smart-Agriculture-Project/blob/main/Documentation/architecture_diagram.png)  
 
 ---
 
