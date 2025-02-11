@@ -75,7 +75,15 @@ class _MyAppState extends State<MyApp> {
             children: [
               ElevatedButton(
                 onPressed: isConnected ? null : connectMQTT,
-                child: Text(isConnected ? 'Connected' : 'Connect to MQTT'),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.connect_without_contact),
+                    Text(isConnected ? 'Connected' : 'Connect',
+                      style: TextStyle(color: isConnected ? Colors.green : Colors.red),
+                    ),
+                  ],
+                ),
               ),
               SizedBox(height: 30),
               Text('Temperature: $temperature°C', style: TextStyle(fontSize: 24)),
