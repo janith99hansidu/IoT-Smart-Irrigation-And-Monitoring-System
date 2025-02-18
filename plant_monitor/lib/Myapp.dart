@@ -3,6 +3,9 @@ import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'dart:convert';
 
+void main() {
+  runApp(MyApp());
+}
 
 class MyApp extends StatefulWidget {
   @override
@@ -12,10 +15,15 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final String broker = 'test.mosquitto.org';
   final String topic = 'nodemcu/dht11';
+
   MqttServerClient? client;
+  bool isConnected = false;
+
+  // Sensor data variables
   double temperature = 0.0;
   double humidity = 0.0;
-  bool isConnected = false;
+  double moisture = 0.0;
+  bool pumpState = false;
 
   Future<void> connectMQTT() async {
     client = MqttServerClient(broker, '');
@@ -48,8 +56,10 @@ class _MyAppState extends State<MyApp> {
         // Parse JSON payload
         final Map<String, dynamic> data = jsonDecode(payload);
         setState(() {
-          temperature = data['temperature'];
-          humidity = data['humidity'];
+          temperature = data['temperature']?.toDouble() ?? 0.0;
+          humidity = data['humidity']?.toDouble() ?? 0.0;
+          moisture = data['moisture']?.toDouble() ?? 0.0;
+          pumpState = (data['pumpState'] == 1 || data['pumpState'] == true);
         });
       });
     } catch (e) {
@@ -67,48 +77,181 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData.dark().copyWith(
+        scaffoldBackgroundColor: Color(0xFF121212),
+      ),
       home: Scaffold(
-        appBar: AppBar(title: Text('DHT11 Sensor Data')),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton(
-                onPressed: isConnected ? null : connectMQTT,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
+        appBar: AppBar(
+          title: Text('Smart Farm Dashboard'),
+          backgroundColor: Colors.black87,
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                // Connection Status / Button
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Icon(Icons.connect_without_contact),
-                    Text(isConnected ? 'Connected' : 'Connect',
-                      style: TextStyle(color: isConnected ? Colors.green : Colors.red),
+                    ElevatedButton.icon(
+                      onPressed: isConnected ? null : connectMQTT,
+                      icon: Icon(Icons.connect_without_contact),
+                      label: Text(
+                        isConnected ? 'Connected' : 'Connect',
+                        style: TextStyle(
+                          color: isConnected ? Colors.green : Colors.red,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.grey[850],
+                      ),
                     ),
                   ],
                 ),
-              ),
-              SizedBox(height: 30),
-              Text('Temperature: $temperature°C', style: TextStyle(fontSize: 24)),
-              SizedBox(height: 20),
-              Text('Humidity:', style: TextStyle(fontSize: 24)),
-              SizedBox(height: 10),
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  SizedBox(
-                    width: 150,
-                    height: 150,
-                    child: CircularProgressIndicator(
-                      value: humidity / 100, // Convert to 0.0 - 1.0 range
-                      strokeWidth: 10,
-                      backgroundColor: Colors.grey[300],
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                SizedBox(height: 20),
+
+                // Row of "Current Temperature" and "Humidity"
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildInfoCard(
+                        context,
+                        title: 'Temperature',
+                        value: '${temperature.toStringAsFixed(1)}°C',
+                        icon: Icons.thermostat,
+                        color: Colors.orange,
+                      ),
                     ),
-                  ),
-                  Text('${humidity.toStringAsFixed(1)}%', style: TextStyle(fontSize: 20)),
-                ],
-              ),
-            ],
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: _buildInfoCard(
+                        context,
+                        title: 'Humidity',
+                        value: '${humidity.toStringAsFixed(1)}%',
+                        icon: Icons.water_drop,
+                        color: Colors.blue,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16),
+
+                // Row of "Moisture" and "Pump State"
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildInfoCard(
+                        context,
+                        title: 'Moisture',
+                        value: '${moisture.toStringAsFixed(1)}%',
+                        icon: Icons.opacity,
+                        color: Colors.green,
+                      ),
+                    ),
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: _buildPumpCard(context),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
+      ),
+    );
+  }
+
+  // Helper widget: Basic info card with title, value, icon
+  Widget _buildInfoCard(
+      BuildContext context, {
+        required String title,
+        required String value,
+        required IconData icon,
+        required Color color,
+      }) {
+    // Dynamically set font size based on screen width
+    double screenWidth = MediaQuery.of(context).size.width;
+    double titleFontSize = screenWidth * 0.03; // 4% of width
+    double valueFontSize = screenWidth * 0.05; // 5% of width
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey[900],
+        borderRadius: BorderRadius.circular(12),
+      ),
+      padding: EdgeInsets.all(16),
+      child: Row(
+        children: [
+          Icon(icon, size: 40, color: color),
+          SizedBox(width: 16),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: titleFontSize,
+                  color: Colors.grey[400],
+                ),
+              ),
+              SizedBox(height: 8),
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: valueFontSize,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  // Helper widget: Pump State card (On/Off)
+  Widget _buildPumpCard(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double titleFontSize = screenWidth * 0.03;
+    double valueFontSize = screenWidth * 0.05;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey[900],
+        borderRadius: BorderRadius.circular(12),
+      ),
+      padding: EdgeInsets.all(16),
+      child: Row(
+        children: [
+          Icon(
+            pumpState ? Icons.power : Icons.power_off,
+            size: 40,
+            color: pumpState ? Colors.green : Colors.red,
+          ),
+          SizedBox(width: 16),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Pump',
+                style: TextStyle(
+                  fontSize: titleFontSize,
+                  color: Colors.grey[400],
+                ),
+              ),
+              SizedBox(height: 8),
+              Text(
+                pumpState ? 'ON' : 'OFF',
+                style: TextStyle(
+                  fontSize: valueFontSize,
+                  color: pumpState ? Colors.green : Colors.red,
+                ),
+              ),
+            ],
+          )
+        ],
       ),
     );
   }
