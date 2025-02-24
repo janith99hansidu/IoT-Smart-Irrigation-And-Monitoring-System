@@ -57,7 +57,7 @@ void setup() {
   reconnectMQTT(client, mqtt_topic);
 
   // (Optional) Uncomment to get weather forecast data at startup
-  // getWeatherForecast();
+  getWeatherForecast();
 }
 
 void loop() {

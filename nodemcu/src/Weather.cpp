@@ -30,16 +30,6 @@ void getWeatherForecast() {
       Serial.println(error.f_str());
       return;
     }
-
-    JsonObject forecast = doc["forecast"]["forecastday"][0];
-    JsonArray hours = forecast["hour"];
-
-    // Print the forecast for the next 5 hours
-    for (int i = 0; i < 5; i++) {
-      String time = hours[i]["time"].as<String>();
-      float temp = hours[i]["temp_c"].as<float>();
-      Serial.printf("Time: %s, Temp: %.1f°C\n", time.c_str(), temp);
-    }
   } else {
     Serial.println("Failed to connect to weather API");
   }
