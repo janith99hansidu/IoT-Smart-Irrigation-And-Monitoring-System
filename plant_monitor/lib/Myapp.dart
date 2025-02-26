@@ -77,13 +77,11 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: Color(0xFF121212),
+      theme: ThemeData.light().copyWith(
       ),
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Smart Farm Dashboard'),
-          backgroundColor: Colors.black87,
+          title: Text('Smart Farm Dashboard')
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
