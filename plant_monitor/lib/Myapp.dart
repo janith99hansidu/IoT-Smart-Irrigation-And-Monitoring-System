@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
+import 'package:plant_monitor/widgets/pump_card.dart';
 import 'dart:convert';
+
+import 'package:plant_monitor/widgets/sensor_card.dart';
+import 'package:plant_monitor/widgets/weather_chart_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -113,8 +117,7 @@ class _MyAppState extends State<MyApp> {
                 Row(
                   children: [
                     Expanded(
-                      child: _buildInfoCard(
-                        context,
+                      child: SensorCard(
                         title: 'Temperature',
                         value: '${temperature.toStringAsFixed(1)}°C',
                         icon: Icons.thermostat,
@@ -123,24 +126,16 @@ class _MyAppState extends State<MyApp> {
                     ),
                     SizedBox(width: 16),
                     Expanded(
-                      child: _buildInfoCard(
-                        context,
+                      child: SensorCard(
                         title: 'Humidity',
                         value: '${humidity.toStringAsFixed(1)}%',
                         icon: Icons.water_drop,
                         color: Colors.blue,
                       ),
                     ),
-                  ],
-                ),
-                SizedBox(height: 16),
-
-                // Row of "Moisture" and "Pump State"
-                Row(
-                  children: [
+                    SizedBox(width: 16),
                     Expanded(
-                      child: _buildInfoCard(
-                        context,
+                      child: SensorCard(
                         title: 'Moisture',
                         value: '${moisture.toStringAsFixed(1)}%',
                         icon: Icons.opacity,
@@ -149,11 +144,15 @@ class _MyAppState extends State<MyApp> {
                     ),
                     SizedBox(width: 16),
                     Expanded(
-                      child: _buildPumpCard(context),
+                      child: PumpCard(pumpState: pumpState),
                     ),
                   ],
                 ),
-              ],
+                SizedBox(height: 16),
+
+                // Row of "Moisture" and "Pump State
+                WeatherChartScreen(),
+              ]
             ),
           ),
         ),
@@ -161,96 +160,4 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  // Helper widget: Basic info card with title, value, icon
-  Widget _buildInfoCard(
-      BuildContext context, {
-        required String title,
-        required String value,
-        required IconData icon,
-        required Color color,
-      }) {
-    // Dynamically set font size based on screen width
-    double screenWidth = MediaQuery.of(context).size.width;
-    double titleFontSize = screenWidth * 0.03; // 4% of width
-    double valueFontSize = screenWidth * 0.05; // 5% of width
-
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.grey[900],
-        borderRadius: BorderRadius.circular(12),
-      ),
-      padding: EdgeInsets.all(16),
-      child: Row(
-        children: [
-          Icon(icon, size: 40, color: color),
-          SizedBox(width: 16),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: titleFontSize,
-                  color: Colors.grey[400],
-                ),
-              ),
-              SizedBox(height: 8),
-              Text(
-                value,
-                style: TextStyle(
-                  fontSize: valueFontSize,
-                  color: Colors.white,
-                ),
-              ),
-            ],
-          )
-        ],
-      ),
-    );
-  }
-
-  // Helper widget: Pump State card (On/Off)
-  Widget _buildPumpCard(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double titleFontSize = screenWidth * 0.03;
-    double valueFontSize = screenWidth * 0.05;
-
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.grey[900],
-        borderRadius: BorderRadius.circular(12),
-      ),
-      padding: EdgeInsets.all(16),
-      child: Row(
-        children: [
-          Icon(
-            pumpState ? Icons.power : Icons.power_off,
-            size: 40,
-            color: pumpState ? Colors.green : Colors.red,
-          ),
-          SizedBox(width: 16),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Pump',
-                style: TextStyle(
-                  fontSize: titleFontSize,
-                  color: Colors.grey[400],
-                ),
-              ),
-              SizedBox(height: 8),
-              Text(
-                pumpState ? 'ON' : 'OFF',
-                style: TextStyle(
-                  fontSize: valueFontSize,
-                  color: pumpState ? Colors.green : Colors.red,
-                ),
-              ),
-            ],
-          )
-        ],
-      ),
-    );
-  }
 }
