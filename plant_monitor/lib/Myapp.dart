@@ -81,11 +81,25 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: ThemeData.light().copyWith(
       ),
       home: Scaffold(
+        backgroundColor: Colors.white,
         appBar: AppBar(
-          title: Text('Smart Farm Dashboard')
+          backgroundColor: Colors.white,
+          title: Center(
+            child: Text(
+              'Smart Irrigation System Dashboard',
+              style: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+                letterSpacing: 1,
+              ),
+              textAlign: TextAlign.center, // Center the text within its container
+            ),
+          )
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
