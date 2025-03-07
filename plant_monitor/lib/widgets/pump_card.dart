@@ -24,33 +24,39 @@ class _PumpCardState extends State<PumpCard> {
         borderRadius: BorderRadius.circular(0),
       ),
       padding: const EdgeInsets.all(16),
-      child: Row(
-        children: [
-          Icon(
-            widget.pumpState ? Icons.power : Icons.power_off,
-            size: 40,
-            color: widget.pumpState ? Colors.green : Colors.red,
-          ),
-          const SizedBox(width: 16),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Pump',
-                style: TextStyle(
-                  color: Colors.grey[400],
+      child: Container(
+        // height: 60, // Adjust to match other cards
+        child: Row(
+          children: [
+            Icon(
+              widget.pumpState ? Icons.power : Icons.power_off,
+              size: 40,
+              color: widget.pumpState ? Colors.green : Colors.red,
+            ),
+            const SizedBox(width: 16),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center, // Align vertically
+              children: [
+                Text(
+                  'Pump',
+                  style: TextStyle(
+                    fontSize: 16.0, // Match SensorCard
+                    color: Colors.grey[400],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                widget.pumpState ? 'ON' : 'OFF',
-                style: TextStyle(
-                  color: widget.pumpState ? Colors.green : Colors.red,
+                const SizedBox(height: 8),
+                Text(
+                  widget.pumpState ? 'ON' : 'OFF',
+                  style: TextStyle(
+                    fontSize: 20.0, // Match SensorCard
+                    color: widget.pumpState ? Colors.green : Colors.red,
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

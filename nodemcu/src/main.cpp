@@ -26,7 +26,7 @@ const char* mqtt_topic = "nodemcu/dht11";
 float moisturePercentage = 0.0;
 bool pumpState = false;
 unsigned long lastPublishTime = 0;
-const long publishInterval = 3000; // in milliseconds
+const long publishInterval = 3000;
 uint32_t delayMS = 0;
 
 // Global objects
@@ -56,7 +56,7 @@ void setup() {
   // Connect to the MQTT broker
   reconnectMQTT(client, mqtt_topic);
 
-  // (Optional) Uncomment to get weather forecast data at startup
+  // get weather forecast data at startup
   getWeatherForecast();
 }
 
