@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
+import 'package:plant_monitor/screens/weather_chart_screen.dart';
 import 'package:plant_monitor/widgets/pump_card.dart';
 import 'dart:convert';
 
@@ -52,7 +53,8 @@ class _MyAppState extends State<MyApp> {
       client!.subscribe(topic, MqttQos.atMostOnce);
 
       client!.updates!.listen((List<MqttReceivedMessage<MqttMessage>> c) {
-        final MqttPublishMessage recMessage = c[0].payload as MqttPublishMessage;
+        final MqttPublishMessage recMessage =
+        c[0].payload as MqttPublishMessage;
         final payload =
         MqttPublishPayload.bytesToStringAsString(recMessage.payload.message);
         print('Received: $payload');
@@ -82,11 +84,29 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData.light().copyWith(
-      ),
-      home: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
+      theme: ThemeData.light().copyWith(),
+      home: HomeScreen(connectMQTT, isConnected, temperature, humidity,
+          moisture, pumpState),
+    );
+  }
+}
+
+class HomeScreen extends StatelessWidget {
+  final VoidCallback connectMQTT;
+  final bool isConnected;
+  final double temperature;
+  final double humidity;
+  final double moisture;
+  final bool pumpState;
+
+  HomeScreen(this.connectMQTT, this.isConnected, this.temperature,
+      this.humidity, this.moisture, this.pumpState);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
           backgroundColor: Colors.white,
           title: Center(
             child: Text(
@@ -97,81 +117,107 @@ class _MyAppState extends State<MyApp> {
                 color: Colors.black,
                 letterSpacing: 1,
               ),
-              textAlign: TextAlign.center, // Center the text within its container
+              textAlign: TextAlign.center,
             ),
-          )
+          )),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(color: Colors.blue),
+              child: Text(
+                'Menu',
+                style: TextStyle(fontSize: 24, color: Colors.white),
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.home),
+              title: Text('Dashboard'),
+              onTap: () {
+                Navigator.pop(context); // Close the drawer
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.bar_chart),
+              title: Text('Weather Chart'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => WeatherChartPage()),
+                );
+              },
+            ),
+          ],
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: SingleChildScrollView(
-            child: Column(
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          child: Column(children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                // Connection Status / Button
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    ElevatedButton.icon(
-                      onPressed: isConnected ? null : connectMQTT,
-                      icon: Icon(Icons.connect_without_contact),
-                      label: Text(
-                        isConnected ? 'Connected' : 'Connect',
-                        style: TextStyle(
-                          color: isConnected ? Colors.green : Colors.red,
-                        ),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.grey[850],
-                      ),
+                ElevatedButton.icon(
+                  onPressed: isConnected ? null : connectMQTT,
+                  icon: Icon(Icons.connect_without_contact),
+                  label: Text(
+                    isConnected ? 'Connected' : 'Connect',
+                    style: TextStyle(
+                      color: isConnected ? Colors.green : Colors.red,
                     ),
-                  ],
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.grey[850],
+                  ),
                 ),
-                SizedBox(height: 20),
-
-                // Row of "Current Temperature" and "Humidity"
-                Row(
-                  children: [
-                    Expanded(
-                      child: SensorCard(
-                        title: 'Temperature',
-                        value: '${temperature.toStringAsFixed(1)}°C',
-                        icon: Icons.thermostat,
-                        color: Colors.orange,
-                      ),
-                    ),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: SensorCard(
-                        title: 'Humidity',
-                        value: '${humidity.toStringAsFixed(1)}%',
-                        icon: Icons.water_drop,
-                        color: Colors.blue,
-                      ),
-                    ),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: SensorCard(
-                        title: 'Moisture',
-                        value: '${moisture.toStringAsFixed(1)}%',
-                        icon: Icons.opacity,
-                        color: Colors.green,
-                      ),
-                    ),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: PumpCard(pumpState: pumpState),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 16),
-
-                // Row of "Moisture" and "Pump State
-                WeatherChartScreen(),
-              ]
+              ],
             ),
-          ),
+            SizedBox(height: 20),
+
+            // Sensor Cards
+            Row(
+              children: [
+                Expanded(
+                  child: SensorCard(
+                    title: 'Temperature',
+                    value: '${temperature.toStringAsFixed(1)}°C',
+                    icon: Icons.thermostat,
+                    color: Colors.orange,
+                  ),
+                ),
+                SizedBox(width: 16),
+                Expanded(
+                  child: SensorCard(
+                    title: 'Humidity',
+                    value: '${humidity.toStringAsFixed(1)}%',
+                    icon: Icons.water_drop,
+                    color: Colors.blue,
+                  ),
+                ),
+                SizedBox(width: 16),
+                Expanded(
+                  child: SensorCard(
+                    title: 'Moisture',
+                    value: '${moisture.toStringAsFixed(1)}%',
+                    icon: Icons.opacity,
+                    color: Colors.green,
+                  ),
+                ),
+                SizedBox(width: 16),
+                Expanded(
+                  child: PumpCard(pumpState: pumpState),
+                ),
+              ],
+            ),
+            SizedBox(height: 16),
+            Container(child: WeatherChartScreen()),
+          ]),
         ),
       ),
     );
   }
-
 }
+
+
