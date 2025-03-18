@@ -13,6 +13,8 @@
 #define DHTPIN D3           // DHT11 sensor connected pin
 #define DHTTYPE DHT11       // Type of the DHT sensor
 #define MOISTUREPIN A0      // Moisture sensor analog pin
+#define SWITCHPIN D4        // Switch to on off the motor pump
+#define RELAYPIN D5
 
 // WiFi credentials 
 const char* ssid = "realme";
@@ -46,6 +48,7 @@ void setup() {
 
   // Setup built-in LED (for testing, used as a relay output)
   pinMode(BUILTIN_LED, OUTPUT);
+  pinMode(RELAYPIN, OUTPUT);
   
   // Connect to WiFi
   connectWiFi(ssid, password);
@@ -61,16 +64,20 @@ void setup() {
 }
 
 void loop() {
-  // Ensure WiFi connection is active
-  checkWiFi(ssid, password);
+  digitalWrite(RELAYPIN, HIGH);
+  delay(1000);
+  digitalWrite(RELAYPIN, LOW);
+  delay(1000);
+  // // Ensure WiFi connection is active
+  // checkWiFi(ssid, password);
   
-  // Publish sensor data at the specified interval
-  unsigned long now = millis();
-  if (now - lastPublishTime >= publishInterval) {
-    lastPublishTime = now;
-    publishSensorData(dht, moisturePercentage, pumpState, client, MOISTUREPIN, mqtt_topic);
-  }
+  // // Publish sensor data at the specified interval
+  // unsigned long now = millis();
+  // if (now - lastPublishTime >= publishInterval) {
+  //   lastPublishTime = now;
+  //   publishSensorData(dht, moisturePercentage, pumpState, client, MOISTUREPIN, mqtt_topic);
+  // }
 
-  // Process incoming MQTT messages
-  client.loop();
+  // // Process incoming MQTT messages
+  // client.loop();
 }
