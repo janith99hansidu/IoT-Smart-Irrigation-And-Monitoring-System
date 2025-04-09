@@ -1,0 +1,105 @@
+#include "mgos.h"
+#include "mgos_dht.h"
+#include "mgos_adc.h"
+#include "mgos_gpio.h"
+#include "mgos_timers.h"
+#include "mgos_mqtt.h"
+#include <string.h>
+
+// Define your pins (adjust these as needed)
+#define RELAY_PIN         5
+#define BUTTON_PIN        4
+#define DHT_PIN           2
+#define SOIL_MOISTURE_ADC 0
+
+// Global variable to hold the current relay state
+static bool relay_on = false;
+
+/*
+ * Publish sensor data via MQTT. The payload is a JSON string containing:
+ * - pumpState: current state ("true" or "false")
+ * - temperature (in Celsius)
+ * - humidity (in %)
+ * - moisture (in %)
+ */
+static void publish_sensor_data(double temp, double humidity, double soil_percent) {
+  char payload[128];
+  snprintf(payload, sizeof(payload),
+           "{pumpState: %d,temperature: %.2lf,humidity: %.2lf, moisture: %.2lf}",
+           relay_on ? true : false, temp, humidity, soil_percent);
+  
+  bool connected = mgos_mqtt_global_connect();
+  
+  // Use mgos_mqtt_pubf with a format string to safely publish the payload.
+  mgos_mqtt_pubf("nodemcu/dht11", 1, true, payload);
+  LOG(LL_INFO, ("MQTT Publish: %s, connected: %d", payload, connected));
+}
+
+/*
+ * Timer callback to periodically read sensor values.
+ * Reads DHT11 for temperature and humidity and ADC for soil moisture.
+ */
+static void sensor_timer_cb(void *arg) {
+  (void) arg;
+  
+  // Create a DHT instance for the DHT11 sensor
+  struct mgos_dht *dht = mgos_dht_create(DHT_PIN, DHT11);
+  double temp = mgos_dht_get_temp(dht);
+  double humidity = mgos_dht_get_humidity(dht);
+  
+  // Read soil moisture raw value from ADC
+  int moisture_raw = mgos_adc_read(SOIL_MOISTURE_ADC);
+  // Convert raw value (0-1023) to percentage (inverted if necessary)
+  double soil_percent = ((1022- (double)moisture_raw) / 1023.0) * 100.0;
+  
+  LOG(LL_INFO, ("Sensor Readings - Temp: %.2lf°C, Humidity: %.2lf%%, Soil Moisture: %.2lf%%", temp, humidity, soil_percent));
+  
+  // Publish all sensor values via MQTT
+  publish_sensor_data(temp, humidity, soil_percent);
+}
+
+/*
+ * Button handler that toggles the relay state.
+ * When the button (configured with an internal pull-up) is pressed,
+ * this function toggles the relay and publishes the new state.
+ */
+static void button_handler(int pin, void *arg) {
+  (void) pin;
+  (void) arg;
+  
+  // Toggle relay state
+  relay_on = !relay_on;
+  mgos_gpio_write(RELAY_PIN, relay_on ? 1 : 0);
+  LOG(LL_INFO, ("Button pressed, Relay turned %s", relay_on ? "ON" : "OFF"));
+  
+  // Immediately publish sensor data after toggling
+  struct mgos_dht *dht = mgos_dht_create(DHT_PIN, DHT11);
+  double temp = mgos_dht_get_temp(dht);
+  double humidity = mgos_dht_get_humidity(dht);
+  int moisture_raw = mgos_adc_read(SOIL_MOISTURE_ADC);
+  double soil_percent = ((1022- (double)moisture_raw) / 1023.0) * 100.0;
+  publish_sensor_data(temp, humidity, soil_percent);
+}
+
+/*
+ * Main application initialization.
+ * Sets up the GPIOs, ADC, timers, and button handler.
+ */
+enum mgos_app_init_result mgos_app_init(void) {
+  // Configure the relay pin as output and ensure it starts off.
+  mgos_gpio_set_mode(RELAY_PIN, MGOS_GPIO_MODE_OUTPUT);
+  mgos_gpio_write(RELAY_PIN, 0);
+
+  // Configure the button pin as input with an internal pull-up resistor.
+  mgos_gpio_set_mode(BUTTON_PIN, MGOS_GPIO_PULL_UP);
+  mgos_gpio_set_button_handler(BUTTON_PIN, MGOS_GPIO_PULL_UP, MGOS_GPIO_INT_EDGE_NEG, 200, button_handler, NULL);
+  
+  // Enable ADC for the soil moisture sensor.
+  bool adc_enabled = mgos_adc_enable(SOIL_MOISTURE_ADC);
+  LOG(LL_INFO, ("ADC enabled: %d", adc_enabled));
+  
+  // Set a periodic timer to read sensor data every 10 seconds.
+  mgos_set_timer(10000, MGOS_TIMER_REPEAT, sensor_timer_cb, NULL);
+  
+  return MGOS_APP_INIT_SUCCESS;
+}

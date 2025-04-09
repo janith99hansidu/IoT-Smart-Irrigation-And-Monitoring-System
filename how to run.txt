@@ -1,0 +1,8 @@
+1.go to the mos.exe file location and open cmd
+mos
+2.to build the project
+mos build
+3.upload to the esp8266
+mos flash
+4.configure wifi
+mos wifi hansidu 12345678
