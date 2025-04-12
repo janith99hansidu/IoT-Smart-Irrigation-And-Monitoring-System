@@ -1,7 +1,3 @@
-Perfect! Here's your **GitHub `README.md`** for the **Smart Agriculture Project (EC6020)** — with all sections, images, and details from both the presentation and project proposal PDF integrated and organized in a polished format:
-
----
-
 # 🌾 Smart Agriculture System – EC6020
 
 An **IoT-enabled solution** designed to automate and optimize irrigation in agriculture using real-time environmental monitoring and cloud-based remote control.
@@ -137,13 +133,3 @@ Our Smart Agriculture System addresses these problems through:
 ## 🔗 GitHub Repository
 
 📁 [Project Repository](https://github.com/janith99hansidu/EC6020-Smart-Agriculture-Project)
-
----
-
-## 🙌 Thank You!
-
-Let us know if you have any feedback or suggestions! We are open to collaboration and enhancements.
-
----
-
-Would you like this version exported as a `README.md` file ready to upload to GitHub? I can also zip it along with assets (images, diagrams, etc.) if needed.
