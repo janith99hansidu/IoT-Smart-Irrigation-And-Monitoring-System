@@ -1,4 +1,4 @@
-# 🌾 Smart Agriculture System – EC6020
+# 🌾 IoT-Smart-Irrigation-And-Monitoring-System
 
 An **IoT-enabled solution** designed to automate and optimize irrigation in agriculture using real-time environmental monitoring and cloud-based remote control.
 
@@ -33,10 +33,8 @@ Our Smart Agriculture System addresses these problems through:
 
 1. **Soil Moisture Monitoring** – Automatically controls irrigation based on real-time soil data.
 2. **Environmental Sensing** – Uses DHT11 to collect temperature and humidity readings.
-3. **Cloud Connectivity** – Sends data to a cloud platform for **remote access and control**.
-4. **Automated Notifications** – Alerts users when conditions are outside safe limits.
-5. **Manual & Auto Modes** – Offers flexibility to override automatic control if needed.
-6. **Predictive Insights** – Long-term environmental data helps forecast irrigation needs using web APIs.
+3. **MQTT Connectivity** – Sends data to a web platform for **remote access and control**.
+4. **Manual & Auto Modes** – Offers flexibility to override automatic control if needed.
 
 ---
 
@@ -45,9 +43,7 @@ Our Smart Agriculture System addresses these problems through:
 - ✅ Automated irrigation based on soil moisture levels.
 - 🌡️ Real-time temperature and humidity tracking.
 - 🖥️ Live dashboard and app for monitoring and control.
-- 🔔 Alert system for dry soil/extreme weather.
 - 🔁 Manual and auto watering modes.
-- 📊 Predictive analytics to prepare for changing conditions.
 
 ---
 
@@ -67,8 +63,6 @@ Our Smart Agriculture System addresses these problems through:
 ## 📡 Communication & Protocols
 
 - **MQTT** – Efficient, lightweight real-time data communication.
-- **HTTP/REST APIs** – For cloud interactions.
-- **Firebase** – For remote monitoring, control, and alerting.
 - **UI** – Mobile app and web dashboard for control and visualization.
 
 ---
@@ -105,7 +99,7 @@ Our Smart Agriculture System addresses these problems through:
 ### ⚙️ Smart Control Modes
 
 - **Auto Mode**: Waters plants when moisture drops below threshold.
-- **Manual Mode**: Control water pump manually via app button.
+- **Manual Mode**: Control water pump manually via button in control box.
 - **Wi-Fi Toggle**: Securely connect/disconnect the device.
 
 ---
@@ -129,7 +123,7 @@ Our Smart Agriculture System addresses these problems through:
 - ✅ Week 1–2: Component research and circuit planning  
 - ✅ Week 3–4: Hardware procurement and initial assembly  
 - 🔧 Week 5–6: Code development and testing  
-- 🔄 Week 7–8: Cloud sync, UI integration  
+- 🔄 Week 7–8: UI integration  
 - 📦 Final Week: Testing, debugging, and documentation
 
 ---
