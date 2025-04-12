@@ -87,6 +87,9 @@ Our Smart Agriculture System addresses these problems through:
 - Relay connected to GPIO **D2**
 - Controlled by **5V Power Supply**
 
+- 
+![Screenshot 2025-04-12 115032](https://github.com/user-attachments/assets/1eb09150-a5c4-4365-9aca-990b4ea951aa)
+
 ---
 
 ## 🖼️ App Interface & Features
