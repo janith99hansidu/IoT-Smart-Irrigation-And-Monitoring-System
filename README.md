@@ -75,7 +75,7 @@ Our Smart Agriculture System addresses these problems through:
 
 ## 🧠 System Architecture
 
-![System Architecture](https://github.com/BuddhiniNavoda/smart-medical-reminder-box-EC6020/blob/main/Block_Diagram/Architechture_new.png?raw=true)  
+![Screenshot 2025-04-12 115000](https://github.com/user-attachments/assets/c17adb52-878f-482a-aab9-41dc267fa98e)
 > *Schematic: Sensors → NodeMCU → Relay → Water Pump; cloud communication via Wi-Fi*
 
 ---
@@ -87,7 +87,6 @@ Our Smart Agriculture System addresses these problems through:
 - Relay connected to GPIO **D2**
 - Controlled by **5V Power Supply**
 
-- 
 ![Screenshot 2025-04-12 115032](https://github.com/user-attachments/assets/1eb09150-a5c4-4365-9aca-990b4ea951aa)
 
 ---
