@@ -94,7 +94,7 @@ Our Smart Agriculture System addresses these problems through:
   - Humidity
   - Soil Moisture
 
-![Screenshot 2025-04-10 122735]([https://github.com/user-attachments/assets/68c413a7-9901-486f-8eb8-799115fd06c1](https://github.com/janith99hansidu/IoT-Smart-Irrigation-And-Monitoring-System/blob/main/Documentation/ui.png)
+![Screenshot 2025-04-10 122735]([https://github.com/user-attachments/assets/68c413a7-9901-486f-8eb8-799115fd06c1](https://github.com/janith99hansidu/IoT-Smart-Irrigation-And-Monitoring-System/blob/main/Documentation/ui.png])
 
 ### ⚙️ Smart Control Modes
 
